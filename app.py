@@ -1,56 +1,39 @@
-from typing import Annotated, TypedDict
+import streamlit as st 
 
-from dotenv import load_dotenv
-from langchain_core.messages import BaseMessage, HumanMessage
-from langchain_groq import ChatGroq
-from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import END, START, StateGraph
-from langgraph.graph.message import add_messages
-import streamlit as st
+from backend.chatbot import chabt
 
-load_dotenv()
+# Page config
+st.set_page_config(
+    page_title = "LangGaph chatbot",
+    page_icon="🤖",
+    )
 
-st.title("Agentic chatbot with Langgraph")
+st.title("🤖 LangGraph Chatbot")
 
-class ChatState(TypedDict):
-    messages: Annotated[list[BaseMessage], add_messages]
+# Session/conversation config
 
+if thread_id not in st.session_state:
+    st.session_state.thread_id = "streamlit-session-1"
 
-def chat_node(state: ChatState):
-    return {"messages": [llm.invoke(state["messages"])]}
+    config = {
+        "configurable" : {
+            "thread_id" : st.session_state.thread_id
+        }
+    }
 
+# Load existing state from LanGraph
 
-llm = ChatGroq(model="openai/gpt-oss-20b", temperature=0)
-graph = StateGraph(ChatState)
-graph.add_node("chat_node", chat_node)
-graph.add_edge(START, "chat_node")
-graph.add_edge("chat_node", END)
-chatbot = graph.compile(checkpointer=MemorySaver())
-
-CONFIG = {'configurable': {'thread_id':'thread_1'}}
-
-if 'message_history' not in st.session_state:
-    st.session_state['message_history'] = []
-
-# Laoding the conevrsation history
-
-for message in st.session_state['message_history']:
-    with st.chat_message(message["role"]):
-        st.text(message['content'])
+state = chatbot.get_state(config)
+messages = state.values.get("messages", [])
 
 
-user_input = st.chat_input('Type here')
+# Dispalay Conversation
+for message in messages:
+    if message.type() == "human":
 
-if user_input:
-    # first add the message to message_history
-    st.session_state["message_history"].append({'role': 'user', 'content': user_input})
-    with st.chat_message('user'):
-        st.text(user_input)
+        with st.chat_message("user"):
+            st.markdown(message.content)
 
-    response = chatbot.invoke({'messages': [HumanMessage(content=user_input)]}, config=CONFIG)
-
-    ai_message = response['messages'][-1].content
-    # add the message to the message histroy
-    st.session_state['message_history'].append({'role': 'assistant', 'content': ai_message})
-    with st.chat_message("assistant"):
-        st.text(ai_message)
+    elif message.type() == "AI":
+        with st.chat_message("assistance"):
+            st.markdown(message.content)
