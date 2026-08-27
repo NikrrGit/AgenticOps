@@ -21,4 +21,104 @@ class ChatState(TypedDict):
 ## WHat problem I have with Reducer?
 >>> The problem with using reducer here is even thogh it keeps appending the chat in that specific session the data that is being provided is not being stored. Everytime a new session starts the data is **erased** -- to solve this problem we will be using **Persistence**
 >>> There are two types of memory : [Temporary Memory]  -- Conversation exist only while the application is running
-    [Persistence Memory] [sqllite]-- Conversations are saved to disk ans servive application restart
+    [Persistence Memory] [sqllite]-- Conversations are saved to disk and servive application restart
+>>> It is important to note that even tho reducer dictates how the data is merged **config** dictates where teh data is saved -- this is why we need *threa_id*  to save the data for user=1 in this case
+>>> **Memorysaver** has to be imported from **checkpoints**.
+
+---------------------------------------------------------------------------------------
+
+## ADDING STREAMIT FOR USER-ASSIATENCE CONVESATION
+
+>>> By directly just calling stramlit with teh chatbot it repalces the previous conversation -- which is why to fix that we need to add **session** here.  Session will keep appending the conversation.
+
+
+
+
+
+------------------------------------------------------------------------------------------
+
+## App.py ---------------------------------- > Refer 
+
+# Streamlit + LangGraph Streaming
+
+## 1. Architecture
+
+The application has two layers:
+
+- Frontend: Streamlit
+- Backend: LangGraph
+
+`app.py` should handle UI concerns.
+
+`backend/chatbot.py` should handle workflow/LLM concerns.
+
+The frontend should communicate with the graph rather than constructing
+the graph itself.
+
+## 2. Streamlit Chat Components
+
+`st.chat_message()`
+
+Used to render a message in the chat interface.
+
+`st.chat_input()`
+
+Used to receive user input.
+
+The basic interaction is:
+
+User
+↓
+st.chat_input()
+↓
+backend
+↓
+st.chat_message("assistant")
+
+## 3. invoke vs stream
+
+`invoke()`
+
+Waits for the complete graph execution and returns the final result.
+
+`stream()`
+
+Returns execution output incrementally.
+
+Use `stream()` when building responsive streaming interfaces.
+
+
+## 4. LangGraph Stream Modes
+
+Important stream modes:
+
+- values
+- updates
+- messages
+- custom
+- checkpoints
+- tasks
+- debug
+
+For LLM token streaming:
+
+`stream_mode="messages"`
+
+    
+>>> Streamilt provides st.chat_messages for rendering converational messages and st.chat_input for collecting user input
+
+>>> when we use *chatbot.stream* -- we basically saying that give me the LLM messsage as they are produced instead of waiting fop the response to be fully produced.
+
+##### Where does the Persistence happend in the code??
+
+>>>>>>>>>>  It is important to note thatist is not Streamlits job to provide you long term conversational memory as we already have 
+
+```python
+
+checkpoint = MemorySaver()
+```
+ -- we are using **LANGGRAPH** feature of checkpoint to create persistence memory, also the **thread_id** is the conversational identity we have
+
+>>> we are not storing the actual messages in *st.session_state**  which can be done for very basic streamlit chatbot, but in this case we already have **Langgraph** persistence and it should be the source of Truth. If we add streamLit as well then there is no point of making 2 source of truths and later it becomes nightmare.
+
+>>> Also the **MemorySaver** is good for learning but for real world application you need - redism/psql or other persistence checkpoints
