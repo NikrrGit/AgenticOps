@@ -37,3 +37,45 @@ for message in messages:
     elif message.type() == "AI":
         with st.chat_message("assistance"):
             st.markdown(message.content)
+
+
+# User input
+
+if prompt := st.chat_input("Ask me anything..."):
+
+    # Display User message immedietley:
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Stream AI response
+    with st.chat_message("assistant"):
+        response_placeholder = st.empty()
+
+        full_response = ""
+
+        for message_chunk, metadata in chat_bot.stream(
+            {
+                "messages" : [
+                    {
+                        "role" : "user",
+                        "content": prompt,
+                    }
+                ]
+            },
+            config=config,
+            stream_mode=messages,
+        ):
+
+            # Only process AI messages
+            if message_chunk.type == "AIMessageChunk":
+
+                token = message_chunk.content
+
+                if token:
+                    full_response += token
+
+                    response_placeholder.markedown(
+                        full_response
+                    )
+
+
