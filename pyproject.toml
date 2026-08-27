@@ -11,7 +11,9 @@ dependencies = [
     "langgraph",
     "langchain-core",
     "langchain-groq",
+    "python-dotenv",
     "typing-extensions>=4.5.0", # helpful for TypedDict compatibility across Python version
+    "streamlit>=1.62.0",
 ]
 
 [project.scripts]

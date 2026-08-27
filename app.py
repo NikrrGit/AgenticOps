@@ -1,6 +1,6 @@
 import streamlit as st 
 
-from backend.chatbot import chabt
+from backend.chatbot import chatbot
 
 # Page config
 st.set_page_config(
@@ -12,14 +12,14 @@ st.title("🤖 LangGraph Chatbot")
 
 # Session/conversation config
 
-if thread_id not in st.session_state:
+if "thread_id" not in st.session_state:
     st.session_state.thread_id = "streamlit-session-1"
 
-    config = {
-        "configurable" : {
-            "thread_id" : st.session_state.thread_id
-        }
+config = {
+    "configurable" : {
+        "thread_id" : st.session_state.thread_id
     }
+}
 
 # Load existing state from LanGraph
 
@@ -29,13 +29,13 @@ messages = state.values.get("messages", [])
 
 # Dispalay Conversation
 for message in messages:
-    if message.type() == "human":
+    if message.type == "human":
 
         with st.chat_message("user"):
             st.markdown(message.content)
 
-    elif message.type() == "AI":
-        with st.chat_message("assistance"):
+    elif message.type == "ai":
+        with st.chat_message("assistant"):
             st.markdown(message.content)
 
 
@@ -53,7 +53,7 @@ if prompt := st.chat_input("Ask me anything..."):
 
         full_response = ""
 
-        for message_chunk, metadata in chat_bot.stream(
+        for message_chunk, metadata in chatbot.stream(
             {
                 "messages" : [
                     {
@@ -63,7 +63,7 @@ if prompt := st.chat_input("Ask me anything..."):
                 ]
             },
             config=config,
-            stream_mode=messages,
+            stream_mode="messages",
         ):
 
             # Only process AI messages
@@ -74,8 +74,7 @@ if prompt := st.chat_input("Ask me anything..."):
                 if token:
                     full_response += token
 
-                    response_placeholder.markedown(
+                    response_placeholder.markdown(
                         full_response
                     )
-
 
