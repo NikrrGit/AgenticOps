@@ -1,21 +1,23 @@
 from backend.chatbot import chatbot
 
-config = { 
+
+config = {
     "configurable": {
-        "thread_id" : "test_thread"
+        "thread_id": "test-thread"
     }
 }
+
 
 response = chatbot.invoke(
     {
         "messages": [
             {
                 "role": "user",
-                "content": "I am learning cuda"
+                "content": "What I am learning?"
             }
         ]
     },
-    config=config
+    config=config,
 )
 
-print(response)
+print(response["messages"][-1].content)
