@@ -122,3 +122,19 @@ checkpoint = MemorySaver()
 >>> we are not storing the actual messages in *st.session_state**  which can be done for very basic streamlit chatbot, but in this case we already have **Langgraph** persistence and it should be the source of Truth. If we add streamLit as well then there is no point of making 2 source of truths and later it becomes nightmare.
 
 >>> Also the **MemorySaver** is good for learning but for real world application you need - redism/psql or other persistence checkpoints
+
+
+
+
+
+
+######-------------------------------------------------------------------------____###################
+
+## Chat Persistence with Langgraph and DB
+
+- The current limitation I have so far is : Streamlit --> LG --> MemoorySaver --> Conversation State. Here `MemorySaver` keeps checkpoints in the application's memory- if you restart pyhton process, that state is gone.
+
+- Whis is  why we can add DB for this - `streamlit --> LG --> Psql --> Persistent checkpoints` -- we add teh thread here for the unique conevrsation.
+
+## Where was the previous chcekcpoint saving the chat??
+- the previous check point was in-memory object
