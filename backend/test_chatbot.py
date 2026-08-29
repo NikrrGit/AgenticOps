@@ -1,3 +1,27 @@
+# from backend.chatbot import chatbot
+
+
+# config = {
+#     "configurable": {
+#         "thread_id": "test-thread"
+#     }
+# }
+
+
+# response = chatbot.invoke(
+#     {
+#         "messages": [
+#             {
+#                 "role": "user",
+#                 "content": "I am learning Cuda for infrence"
+#             }
+#         ]
+#     },
+#     config=config,
+# )
+
+# print(response)
+
 from backend.chatbot import chatbot
 
 
@@ -13,7 +37,7 @@ response = chatbot.invoke(
         "messages": [
             {
                 "role": "user",
-                "content": "What I am learning?"
+                "content": "What am I learning for infrence?"
             }
         ]
     },
