@@ -275,3 +275,119 @@ chatbot = graph.compile(
 
 ## Why use SQLite???
 - Sqlite is an embedded DB, unlike psql it does not reuire DB server , data is stores in local files, useful for local development
+
+
+
+
+
+
+
+# ----------------------------------------------------------------------------------------
+#### Monitoring
+# - --------------------------------------------------------------------------------------
+
+- Monitoring with Langsmith will answer - **what exactly happened when my application ran**
+
+# LangSmith Observability
+
+## 1. What is Observability?
+
+Observability gives visibility into what happens
+inside an AI application while it executes.
+
+Without observability:
+
+Input
+↓
+Output
+
+With observability:
+
+Input
+↓
+Graph execution
+↓
+Nodes
+↓
+LLM calls
+↓
+Tools
+↓
+Output
+
+---
+
+## 2. Trace
+
+A trace represents an execution of an application.
+
+A trace can contain multiple nested runs.
+
+Example:
+
+TRACE
+├── LangGraph
+│   └── chat_node
+│       └── LLM call
+└── final output
+
+---
+
+## 3. Run
+
+A run represents an individual execution step
+inside a trace.
+
+For example:
+
+- graph execution
+- node execution
+- LLM call
+- tool call
+
+Traces are composed of runs.
+
+-- Using LangSmith here will make things simple for us, as trying to monitor every excecution with **print** statement will make thigs much more hectic
+
+-- NO need to modify the code as well as LG and LC will integrate with LS when **tracing** is enabled
+
+## LangSmith Project
+
+A LangSmith project groups traces from an application.
+
+Example:
+
+LANGSMITH_PROJECT=agentic-chatbot
+
+All traces from this application can be viewed
+inside the `agentic-chatbot` LangSmith project.
+
+
+
+## Tags vs Metadata
+
+Tags:
+
+Labels attached to traces.
+
+Example:
+
+tags=[
+    "streamlit",
+    "development"
+]
+
+Metadata:
+
+Structured key-value information.
+
+Example:
+
+metadata={
+    "environment": "development",
+    "application": "agentic-chatbot"
+}
+
+Use tags primarily for categorization/filtering.
+
+Use metadata for structured contextual information.

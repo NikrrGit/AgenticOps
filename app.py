@@ -18,7 +18,15 @@ if "thread_id" not in st.session_state:
 config = {
     "configurable" : {
         "thread_id" : st.session_state.thread_id
-    }
+    },
+    "metadata":{
+        "environment" : "development",
+        "application" : "agentic-chatbot",
+    },
+    "tags" : [
+        "streamlit",
+        "development"
+    ],
 }
 
 # Load existing state from LanGraph
