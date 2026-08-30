@@ -134,7 +134,144 @@ checkpoint = MemorySaver()
 
 - The current limitation I have so far is : Streamlit --> LG --> MemoorySaver --> Conversation State. Here `MemorySaver` keeps checkpoints in the application's memory- if you restart pyhton process, that state is gone.
 
-- Whis is  why we can add DB for this - `streamlit --> LG --> Psql --> Persistent checkpoints` -- we add teh thread here for the unique conevrsation.
+- Whis is  why we can add DB for this - `streamlit --> LG --> sqllite --> Persistent checkpoints` -- we add teh thread here for the unique conevrsation.
 
 ## Where was the previous chcekcpoint saving the chat??
 - the previous check point was in-memory object
+
+## Checkpointer
+
+A checkpointer persists LangGraph state.
+
+The graph defines:
+
+- state
+- nodes
+- edges
+- workflow
+
+The checkpointer defines how the state is persisted.
+
+Examples:
+
+MemorySaver / InMemorySaver
+→ in-memory persistence
+
+SqliteSaver
+→ SQLite persistence
+
+PostgresSaver
+→ PostgreSQL persistence
+
+
+## But WHY `check_same_thread=False`????
+- Pyhtons SQLite connection normally has a restriction :
+- **connection created in Thread A -> Only Thread A should use it** -- But Streamlit application can inviolve execution acreoss threads `check_same_thread = False` will make sure that teh connection will be used across threads 
+
+## Thread ID
+
+A `thread_id` identifies a conversation thread
+for LangGraph persistence.
+
+Same thread_id
+→ continue the same conversation
+
+Different thread_id
+→ separate conversation
+
+Example:
+
+config = {
+    "configurable": {
+        "thread_id": "chat-123"
+    }
+}
+
+
+
+
+## ----------------------------------------------------------------------------------
+## Persistence vs Memory
+
+Checkpoint persistence:
+
+Stores LangGraph execution state so a conversation
+can be resumed later.
+
+This project currently implements persistent
+conversation state.
+
+This is different from long-term semantic memory.
+
+Long-term memory might later involve:
+
+- user preferences
+- facts about users
+- semantic search
+- vector databases
+- external memory stores
+
+# SQLite Persistence
+
+## 1. Why Persistence?
+
+`MemorySaver` stores checkpoints in memory.
+
+When the Python process stops, the state is lost.
+
+A database-backed checkpointer allows state to survive
+application restarts.
+
+---
+
+## 2. Checkpointer
+
+A checkpointer is responsible for persisting
+LangGraph state/checkpoints.
+
+Examples:
+
+MemorySaver / InMemorySaver
+→ memory
+
+SqliteSaver
+→ SQLite
+
+PostgresSaver
+→ PostgreSQL
+
+---
+
+## 3. SqliteSaver
+
+`SqliteSaver` stores LangGraph checkpoints
+inside a SQLite database.
+
+Example:
+
+```python
+conn = sqlite3.connect(
+    "chatbot.db",
+    check_same_thread=False,
+)
+
+checkpointer = SqliteSaver(conn)
+
+chatbot = graph.compile(
+    checkpointer=checkpointer
+)
+
+
+## CheckPoint 
+- A checkpoint represents persisted graph state during graph exwecution
+- The checkponiter saved these checkpoints so that LG can retieve previous state
+
+## State vs Persistence
+- state answers -  what does my graph currently know
+- Persistence answers - Where do I save that state 
+
+## Persistence vs Long-Memory
+-  sqlLite checkpoint is not the same thing as semantic long term memory 
+
+## Why use SQLite???
+- Sqlite is an embedded DB, unlike psql it does not reuire DB server , data is stores in local files, useful for local development
