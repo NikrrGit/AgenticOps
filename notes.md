@@ -391,3 +391,176 @@ metadata={
 Use tags primarily for categorization/filtering.
 
 Use metadata for structured contextual information.
+
+# LangSmith Observability
+
+## 1. Why Observability?
+
+Persistence tells us:
+
+"Where is my application state stored?"
+
+Observability tells us:
+
+"What happened while my application executed?"
+
+---
+
+## 2. Trace
+
+A trace represents one execution of the application.
+
+Example:
+
+User request
+↓
+LangGraph
+↓
+chat_node
+↓
+LLM
+↓
+response
+
+The complete execution can be represented as a trace.
+
+---
+
+## 3. Run
+
+A run represents an individual execution step.
+
+Examples:
+
+- Graph execution
+- Node execution
+- LLM call
+- Tool call
+
+A trace can contain multiple nested runs.
+
+---
+
+## 4. LangSmith
+
+LangSmith provides observability for LLM applications.
+
+It can be used to:
+
+- inspect traces
+- debug failures
+- inspect LLM calls
+- investigate latency
+- monitor application behavior
+- evaluate application performance
+
+---
+
+## 5. LangGraph + LangSmith
+
+LangGraph integrates with LangSmith.
+
+For LangChain/LangGraph applications,
+basic tracing can be enabled through environment variables.
+
+LANGSMITH_TRACING=true
+LANGSMITH_API_KEY=...
+LANGSMITH_PROJECT=...
+
+No major changes to graph logic are required.
+
+---
+
+## 6. Project
+
+`LANGSMITH_PROJECT` determines which LangSmith
+project receives the traces.
+
+Example:
+
+LANGSMITH_PROJECT=agentic-chatbot
+
+---
+
+## 7. Tags
+
+Tags are labels used to categorize/filter traces.
+
+Example:
+
+tags=[
+    "streamlit",
+    "development"
+]
+
+---
+
+## 8. Metadata
+
+Metadata is structured contextual information
+attached to a trace.
+
+Example:
+
+metadata={
+    "environment": "development",
+    "application": "agentic-chatbot"
+}
+
+---
+
+## 9. Persistence vs Observability
+
+SQLite / SqliteSaver:
+
+→ persistence
+
+LangSmith:
+
+→ observability
+
+They solve different problems.
+
+Architecture:
+
+Streamlit
+    ↓
+LangGraph
+    ├── SqliteSaver → chatbot.db
+    │
+    └── LangSmith → traces
+
+---
+
+## 10. Debugging Mindset
+
+Do not only inspect the final response.
+
+Inspect the execution that produced it.
+
+Input
+↓
+Graph
+↓
+Node
+↓
+LLM
+↓
+Tool
+↓
+Output
+
+Observability allows us to inspect these steps.
+
+---
+
+## 11. Automatic vs Custom Tracing
+
+LangGraph/LangChain components can be
+automatically traced by LangSmith.
+
+Custom functions may require explicit
+instrumentation such as `@traceable`.
+
+Do not add custom tracing unnecessarily.
+First understand automatic tracing.
