@@ -1,27 +1,28 @@
+import sqlite3
 from typing import Annotated, TypedDict
 
 from dotenv import load_dotenv
 from langchain_core.messages import BaseMessage
 from langchain_groq import ChatGroq
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
 
-import sqlite3 
-from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.prebuilt import ToolNode, tools_condition
+
+
+load_dotenv()
 
 from backend.tools import tools
 
-# Sql DB 
+
+# SQL database
 conn = sqlite3.connect(
     "chatbot.db",
     check_same_thread=False,
 )
-# Langgraph CheckPointer
+# LangGraph checkpointer
 checkpointer = SqliteSaver(conn)
-
-
-load_dotenv()
 
 llm = ChatGroq(
     model="openai/gpt-oss-20b",
@@ -35,12 +36,11 @@ class ChatState(TypedDict):
 
 
 def chat_node(state: ChatState):
-    messages = state['messages']
-    response = llm_with_tools(state["messages"])
+    response = llm_with_tools.invoke(state["messages"])
     return {"messages": [response]}
 
+
 tool_node = ToolNode(tools)
-checkpoint = MemorySaver()
 graph = StateGraph(ChatState)
 graph.add_node("chat_node", chat_node)
 graph.add_node("tools", tool_node)
@@ -53,4 +53,4 @@ graph.add_conditional_edges(
 graph.add_edge('tools', 'chat_node')
 
 
-chatbot = graph.compile(checkpointer=checkpoint)
+chatbot = graph.compile(checkpointer=checkpointer)

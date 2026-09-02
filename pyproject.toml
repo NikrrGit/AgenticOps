@@ -16,7 +16,7 @@ dependencies = [
     "langgraph-checkpoint-sqlite>=3.1.1",
     "langsmith>=0.11.1",
     "langchain-community>=0.4.2",
-    "arxiv>=4.0.1",
+    "arxiv>=2,<3",
     "wikipedia>=1.4.0",
     "tavily-python>=0.8.0",
 ]
