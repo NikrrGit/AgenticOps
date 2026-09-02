@@ -23,3 +23,9 @@ arxiv = ArxivQueryRun(
     doc_content_chars_mnax=4000,
     )
 )
+
+# Tavily
+
+tavily = TavilySearchResults(
+    max_results=3,
+)
