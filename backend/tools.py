@@ -9,3 +9,8 @@ from langchain_community.utilities import (
 from langchain_community.tools.tavily_search import TavilySearchResults
 
 # wikipedia
+wikipedia = WikipediaQueryRun(
+    api_wrappper=WikipediaAPIWrapper,
+    top_k_results=2,
+    doc_content_chars_max=400,
+)
