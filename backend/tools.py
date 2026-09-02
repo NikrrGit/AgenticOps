@@ -1,0 +1,1 @@
+uv add langchain-community arxiv wikipedia tavily-python
