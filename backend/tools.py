@@ -10,7 +10,7 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 
 # wikipedia
 wikipedia = WikipediaQueryRun(
-    api_wrappper=WikipediaAPIWrapper,
+    api_wrapper=WikipediaAPIWrapper(),
     top_k_results=2,
     doc_content_chars_max=4000,
 )
@@ -20,7 +20,7 @@ wikipedia = WikipediaQueryRun(
 arxiv = ArxivQueryRun(
     arxiv_wrapper = ArxivAPIWrapper(
     top_k_results=2,
-    doc_content_chars_mnax=4000,
+    doc_content_chars_max=4000,
     )
 )
 
