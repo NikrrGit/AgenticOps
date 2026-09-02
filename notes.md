@@ -712,3 +712,24 @@ Actually performs the operation.
 LangGraph:
 
 Orchestrates the workflow between them.
+
+
+
+## Tool Output Limits
+
+Tools should not blindly return unlimited data.
+
+Large tool outputs can increase:
+
+- token usage
+- latency
+- cost
+- context size
+
+Therefore tools should often have limits such as:
+
+top_k_results
+max_results
+doc_content_chars_max
+
+The tool output becomes part of the LLM's context.

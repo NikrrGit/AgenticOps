@@ -29,3 +29,10 @@ arxiv = ArxivQueryRun(
 tavily = TavilySearchResults(
     max_results=3,
 )
+
+# All tolls
+tools = [
+  wikipedia,
+  arxiv,
+  tavily,
+]
