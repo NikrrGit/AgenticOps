@@ -733,3 +733,71 @@ max_results
 doc_content_chars_max
 
 The tool output becomes part of the LLM's context.
+
+## Message Types in Tool Calling
+
+A tool-using conversation can contain:
+
+HumanMessage
+→ user input
+
+AIMessage
+→ model response / tool request
+
+ToolMessage
+→ result returned by a tool
+
+Example:
+
+HumanMessage
+    ↓
+AIMessage(tool_call)
+    ↓
+ToolMessage(result)
+    ↓
+AIMessage(final answer)
+
+
+
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------------
+
+## RAG
+
+# -------------------------------------------------------------------------------------------------------------------------------------------
+
+# RAG — Retrieval-Augmented Generation
+
+RAG allows an LLM to answer questions using
+external/private knowledge.
+
+RAG consists of:
+
+1. Retrieval
+2. Augmentation
+3. Generation
+
+Retrieval:
+Find relevant documents/chunks.
+
+Augmentation:
+Add the retrieved information to the LLM context.
+
+Generation:
+The LLM uses the question + retrieved context
+to generate the answer.
+
+Basic flow:
+
+Question
+↓
+Retriever
+↓
+Relevant chunks
+↓
+Question + chunks
+↓
+LLM
+↓
+Answer
