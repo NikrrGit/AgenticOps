@@ -801,3 +801,155 @@ Question + chunks
 LLM
 ↓
 Answer
+
+
+# RAG Architecture
+
+## RAG
+
+Retrieval-Augmented Generation allows an LLM
+to answer questions using external knowledge.
+
+RAG:
+
+Retrieval
++
+Augmentation
++
+Generation
+
+---
+
+## Indexing vs Retrieval
+
+Indexing happens before the user asks a question.
+
+Documents
+↓
+Chunks
+↓
+Embeddings
+↓
+Vector database
+
+Retrieval happens when the user asks a question.
+
+Question
+↓
+Embedding
+↓
+Vector similarity search
+↓
+Relevant chunks
+
+---
+
+## Vector Database
+
+A vector database stores embeddings and allows
+similarity search.
+
+Example:
+
+Qdrant
+
+The vector database does not itself generate
+the final answer.
+
+It retrieves relevant information.
+
+---
+
+## Retriever
+
+A retriever converts a user query into a search
+operation and returns relevant documents/chunks.
+
+Example:
+
+query
+↓
+retriever
+↓
+documents
+
+---
+
+## RAG Generation
+
+Retrieved documents are added to the LLM context.
+
+Question:
+"What is X?"
+
+Retrieved context:
+"X is ..."
+
+LLM:
+Question + Context
+↓
+Answer
+
+---
+
+## RAG vs Vector Database
+
+Vector database:
+
+Stores and retrieves vectors.
+
+RAG:
+
+A complete architecture that uses retrieval
+to augment LLM generation.
+
+Vector DB is one component of RAG.
+
+---
+
+## RAG as a Tool
+
+RAG retrieval can be exposed as a tool.
+
+LLM
+↓
+RAG tool call
+↓
+Retriever
+↓
+Vector DB
+↓
+Relevant documents
+↓
+LLM
+↓
+Final answer
+
+The LLM decides when the knowledge base
+should be searched.
+
+---
+
+## Retrieval Quality
+
+A RAG system is only useful if retrieval
+returns relevant information.
+
+Therefore test retrieval independently
+before connecting it to the LLM.
+
+---
+
+## Top-k
+
+Top-k controls how many retrieved chunks
+are returned.
+
+Example:
+
+k = 3
+
+means retrieve the 3 most relevant chunks.
+
+Increasing k can provide more context but
+also increases context size and noise.
