@@ -19,6 +19,7 @@ dependencies = [
     "arxiv>=2,<3",
     "wikipedia>=1.4.0",
     "tavily-python>=0.8.0",
+    "langchain-text-splitters>=1.1.2",
 ]
 
 [project.scripts]
