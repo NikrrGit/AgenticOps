@@ -13,12 +13,11 @@ client = QdrantClient(
     url=QDRANT_URL
 )
 
-def create_vector_store(docuements):
-    vector_store=QdrantVectorStorer.from_docuement(
-        docuement=docuements,
+def create_vector_store(documents):
+    vector_store = QdrantVectorStore.from_documents(
+        documents=documents,
         embedding=embeddings,
         url=QDRANT_URL,
         collection_name=COLLECTION_NAME,
     )
-
-return vector_store
+    return vector_store
