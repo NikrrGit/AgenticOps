@@ -124,9 +124,18 @@ checkpoint = MemorySaver()
 >>> Also the **MemorySaver** is good for learning but for real world application you need - redism/psql or other persistence checkpoints
 
 
+invoke()
+    → wait for final result
+
+stream()
+    → receive execution incrementally
 
 
+invoke()
+    → wait for final result
 
+stream()
+    → receive execution incrementally
 
 ######-------------------------------------------------------------------------____###################
 

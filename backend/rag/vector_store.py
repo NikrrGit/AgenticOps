@@ -9,6 +9,9 @@ embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
+embeddings = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
 client = QdrantClient(
     url=QDRANT_URL
 )
@@ -21,3 +24,10 @@ def create_vector_store(documents):
         collection_name=COLLECTION_NAME,
     )
     return vector_store
+
+def get_vector_store():
+    return QuadrantVecotorStore.from_existing_collection(
+        embedding=embeddings,
+        collection_name=COLLECTION_NAME,
+        url=QDRANT_URL
+    )
