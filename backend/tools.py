@@ -8,7 +8,6 @@ from langchain_community.utilities import (
 )
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.tools import tool
-from backend.vector_store import get_vector_store
 
 # wikipedia
 wikipedia = WikipediaQueryRun(
@@ -32,19 +31,17 @@ tavily = TavilySearchResults(
     max_results=3,
 )
 
-# All tolls
-tools = [
-  wikipedia,
-  arxiv,
-  tavily,
-]
-
 @tool
 def retrieve_knowledge(query : str) -> str:
     """
     Search the knowledge base for the information relavent to users question
     Use this tool when the answer may be found in user's document
     """
+
+    # Loading the embedding model is only needed for knowledge-base searches.
+    # Keeping this import local lets the web-search tools work without the
+    # optional RAG dependencies installed.
+    from backend.rag.vector_store import get_vector_store
 
     vector_store = get_vector_store()
 
@@ -65,4 +62,13 @@ def retrieve_knowledge(query : str) -> str:
             f"Content:{document.page_content}"
         )
 
-        return "\n\n---\n\n".join(context)
+    return "\n\n---\n\n".join(context)
+
+
+# All tools
+tools = [
+    wikipedia,
+    arxiv,
+    tavily,
+    retrieve_knowledge,
+]
