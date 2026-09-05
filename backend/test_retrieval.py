@@ -1,8 +1,8 @@
-from backend.vector_store import get_vector_store
+from backend.rag.vector_store import get_vector_store
 
 vector_store = get_vector_store()
 
-results = vector_store.get_similarity_search(
+results = vector_store.similarity_search(
     "what is Langgraph",
     k=4,
 )

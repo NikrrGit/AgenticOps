@@ -26,7 +26,7 @@ def create_vector_store(documents):
     return vector_store
 
 def get_vector_store():
-    return QuadrantVecotorStore.from_existing_collection(
+    return QdrantVectorStore.from_existing_collection(
         embedding=embeddings,
         collection_name=COLLECTION_NAME,
         url=QDRANT_URL
