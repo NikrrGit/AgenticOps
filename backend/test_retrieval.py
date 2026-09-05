@@ -3,7 +3,7 @@ from backend.rag.vector_store import get_vector_store
 vector_store = get_vector_store()
 
 results = vector_store.similarity_search(
-    "what is Langgraph",
+    "Whats is Memory of Lamguage Models?",
     k=4,
 )
 
