@@ -962,3 +962,183 @@ means retrieve the 3 most relevant chunks.
 
 Increasing k can provide more context but
 also increases context size and noise.
+
+
+
+## Agentic RAG
+
+In this project retrieval is exposed as a tool.
+
+The LLM can decide whether to call the retrieval tool.
+
+Therefore:
+
+User
+ ↓
+LLM
+ ↓
+Should I retrieve?
+ ↓
+Tool call
+ ↓
+Qdrant
+ ↓
+retrieved context
+ ↓
+LLM
+ ↓
+answer
+
+
+## Why use a tool?
+
+The LLM can decide when external knowledge is required.
+
+This avoids blindly performing retrieval for every question.
+
+The LangGraph ToolNode executes the selected tool.
+
+After the tool executes, the graph returns to the
+chat node so the LLM can use the retrieved information.
+
+
+## Important distinction
+
+Qdrant ≠ RAG
+
+Qdrant = vector database
+
+RAG = retrieval + augmentation + generation
+
+
+## Metadata
+
+Chunks can contain metadata such as:
+
+source
+document name
+page number
+section
+
+Metadata can later be used to provide citations or
+filter retrieval.
+
+
+
+
+#----------------------------------------------------------------------------------------------------------------
+
+# Connecting Qdrant to LangGraph
+
+# - -------------------------------------------------------------------------------------------------------------
+
+## Vector store responsibilities
+
+The vector store layer is responsible for:
+
+- connecting to Qdrant
+- creating the collection
+- inserting vectors
+- performing similarity search
+
+It should not contain LangGraph-specific logic.
+
+
+## Retrieval tool
+
+The retrieval tool acts as the bridge between the
+LangGraph agent and the vector database.
+
+Architecture:
+
+LLM
+↓
+tool call
+↓
+retrieve_knowledge()
+↓
+Qdrant
+↓
+retrieved documents
+↓
+ToolMessage
+↓
+LLM
+
+
+## Why make retrieval a tool?
+
+The LLM can decide when external knowledge is required.
+
+The agent therefore does not need to retrieve documents
+for every question.
+
+
+## Similarity search
+
+The user query is converted into an embedding.
+
+Qdrant compares the query vector against stored document
+vectors and returns the most similar chunks.
+
+`k=4` means we retrieve the four highest-ranked results.
+
+
+## Same embedding model
+
+The model used for document embeddings and query embeddings
+must be compatible.
+
+Current project:
+
+`sentence-transformers/all-MiniLM-L6-v2`
+
+Document:
+
+text → embedding → Qdrant
+
+Query:
+
+text → embedding → Qdrant search
+
+
+## RAG vs conversation memory
+
+Conversation memory answers:
+
+"What have we talked about?"
+
+RAG answers:
+
+"What relevant information exists in my knowledge base?"
+
+They solve different problems.
+
+SQLite:
+conversation state
+
+Qdrant:
+knowledge retrieval
+
+
+## Agentic RAG
+
+The agent decides whether retrieval is necessary.
+
+Example:
+
+User
+↓
+LLM
+↓
+Need external knowledge?
+├── No → answer
+└── Yes → retrieve tool
+              ↓
+            Qdrant
+              ↓
+         relevant chunks
+              ↓
+             LLM
+              ↓
+            answer
