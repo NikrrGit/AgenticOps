@@ -1142,3 +1142,42 @@ Need external knowledge?
              LLM
               ↓
             answer
+
+
+
+
+
+#---------------------------------------------------------------------------
+# Conversation Management
+#---------------------------------------------------------------------------
+## Thread
+
+A thread represents one conversation.
+
+Example:
+
+thread_id = "abc123"
+
+All LangGraph state associated with this thread
+belongs to that conversation.
+
+
+## Multiple conversations
+
+Different thread IDs create independent conversations.
+
+thread-A
+→ messages belonging to conversation A
+
+thread-B
+→ messages belonging to conversation B
+
+
+## Streamlit session state
+
+`st.session_state` stores frontend/session-specific state.
+
+For example:
+
+```python
+st.session_state.thread_id
