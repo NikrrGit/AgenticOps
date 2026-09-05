@@ -11,7 +11,13 @@ st.set_page_config(
 
 st.title("🤖 LangGraph Chatbot")
 
-# Session/conversation config
+# Initialize conversation tracking
+if "threads" not in st.session_state:
+    st.session_state.threads = []
+    new_thread_id = str(uuid.uuid4())
+    st.session_state.threads.append(new_thread_id)
+    st.session_state.thread_id = new_thread_id
+
 if "thread_id" not in st.session_state:
     st.session_state.thread_id = str(uuid.uuid4())
 
@@ -69,7 +75,7 @@ if prompt := st.chat_input("Ask me anything..."):
             config=config,
             stream_mode="messages",
         ):
-            # LangGraph chunks can match "ai" or "AIMessageChunk" depending on the wrapper
+            
             if getattr(message_chunk, "type", "") in ["AIMessageChunk", "ai"]:
                 token = message_chunk.content
                 if token:
@@ -81,7 +87,8 @@ if prompt := st.chat_input("Ask me anything..."):
 # Add new chat feature
 with st.sidebar:
     st.header("Conversations")
-    # FIX 1 & 2: Added missing closing quote to "➕ New Chat" and fixed typo in "st.session_state"
     if st.button("➕ New Chat"):
-        st.session_state.thread_id = str(uuid.uuid4())
+        new_id = str(uuid.uuid4())
+        st.session_state.threads.append(new_id)
+        st.session_state.thread_id = new_id
         st.rerun()
