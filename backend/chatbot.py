@@ -29,7 +29,9 @@ llm = ChatGroq(
     temperature=0,
 )
 
-llm_with_tools = llm.bind_tools(tools)
+llm_with_tools = llm.bind_tools(
+    tools,
+    parallel_tool_calls=False,)
 
 class ChatState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
