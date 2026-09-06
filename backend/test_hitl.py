@@ -21,6 +21,24 @@ result = chatbot.invoke(
         ]
     },
     config=config,
-)S
+)
 print("\nInitial result:")
+print(result)
+
+
+# Resume after human response
+
+human_response = input("\nHuman response: ")
+
+results = chatbot.invoke(
+    Command(
+        resume={
+            "data": human_response,
+        }
+    ),
+    config=config
+)
+
+
+print("\nFinal result:")
 print(result)
