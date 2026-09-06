@@ -1181,3 +1181,109 @@ For example:
 
 ```python
 st.session_state.thread_id
+
+
+
+
+
+
+
+
+# -----------------------------------------------------------------
+
+# Human-in-the-Loop
+
+# -----------------------------------------------------------------
+
+
+## Why HITL?
+
+LLMs and agents should not always be allowed to
+execute actions autonomously.
+
+Some actions may require:
+
+- approval
+- additional information
+- verification
+- human judgment
+
+Human-in-the-loop allows the graph to pause execution
+and wait for a human decision.
+
+
+## Normal agent execution
+
+User
+↓
+LLM
+↓
+Tool
+↓
+Tool result
+↓
+LLM
+↓
+Answer
+
+
+## Human-in-the-loop execution
+
+User
+↓
+LLM
+↓
+Tool
+↓
+INTERRUPT
+↓
+Human
+↓
+Resume
+↓
+Tool result
+↓
+LLM
+↓
+Answer
+
+
+## interrupt()
+
+LangGraph provides:
+
+```python
+from langgraph.types import interrupt
+
+
+
+---
+
+## The implementation order from here
+
+We're going to do this in **three small stages**:
+
+```text
+STAGE 1 — Backend
+       ↓
+interrupt()
+       ↓
+Command(resume)
+       ↓
+verify persistence
+
+STAGE 2 — Streamlit
+       ↓
+detect interrupt
+       ↓
+display human request
+       ↓
+Approve / Reject
+
+STAGE 3 — Production behavior
+       ↓
+approval metadata
+       ↓
+tool-specific approval
+       ↓
+proper UI state
