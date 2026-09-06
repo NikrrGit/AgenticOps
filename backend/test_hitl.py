@@ -8,3 +8,19 @@ config = {
         "thread_id" : thread_id,
     }
 }
+
+# First Execution
+
+result = chatbot.invoke(
+    {
+        "messages" : [
+            {
+                "role": "user",
+                "content": "Ask a human for help with this question",
+            }
+        ]
+    },
+    config=config,
+)S
+print("\nInitial result:")
+print(result)
