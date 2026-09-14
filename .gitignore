@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Python-generated files
 __pycache__/
 *.py[oc]
@@ -9,7 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
-=======
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -228,4 +226,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
->>>>>>> 8d6d155bea5d3c85efdfe289c0a589c90804060f
+
+# Local notes, credentials, and runtime data
+notes.md
+.env.*
+*.pem
+*.key
+credentials.json
+secrets.json
+chatbot.db*
+qdrant_data/
+.DS_Store
