@@ -234,6 +234,13 @@ notes.md
 *.key
 credentials.json
 secrets.json
+.agents/skills/developing-with-streamlit
 chatbot.db*
 qdrant_data/
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+*.db-wal
+*.db-shm
 .DS_Store
