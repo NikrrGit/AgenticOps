@@ -10,29 +10,79 @@ AgenticOps is an AI research assistant built with Streamlit and LangGraph. Ask q
 - Conversation checkpoints stored in SQLite so a conversation can be resumed by its thread ID.
 - Optional LangSmith tracing for debugging and observability.
 
-## How it works
+## Architecture
 
-The Streamlit app sends each prompt to a LangGraph workflow. The workflow calls Groq's `openai/gpt-oss-20b` model, which can either return a response or request a research tool. Tool results are passed back to the model before the final response is shown. For document questions, the retrieval tool searches the Qdrant knowledge base using locally generated embeddings.
+The runtime diagram shows the request path, the model's tool-call loop, and the two persistence systems. A separate ingestion path loads documents into the same Qdrant collection that the retrieval tool searches.
 
 ```mermaid
 flowchart LR
-    USER[User] --> UI[Streamlit app]
-    UI --> GRAPH[LangGraph workflow]
-    GRAPH --> MODEL[Groq chat model]
-    MODEL -->|tool request| TOOLS[Research tools]
-    TOOLS --> WIKI[Wikipedia]
-    TOOLS --> ARXIV[arXiv]
-    TOOLS --> WEB[Tavily web search]
-    TOOLS --> RAG[Document retrieval]
-    RAG --> QDRANT[(Qdrant)]
-    TOOLS --> GRAPH
-    GRAPH -->|final answer| UI
-    GRAPH -. conversation checkpoints .-> SQLITE[(SQLite)]
-    DOCS[PDF and Markdown files] --> INGEST[Ingestion script]
-    INGEST --> QDRANT
+    USER([User])
+
+    subgraph APP[Application runtime]
+        UI[Streamlit chat<br/>app.py]
+        START((Start))
+        CHAT[chat_node<br/>backend/chatbot.py]
+        MODEL[Groq ChatGroq<br/>openai/gpt-oss-20b]
+        ROUTE{Tool call?}
+        TOOLNODE[LangGraph ToolNode]
+        END((End))
+
+        UI -->|prompt + thread_id| START
+        START --> CHAT --> MODEL --> ROUTE
+        ROUTE -->|No| END
+        ROUTE -->|Yes| TOOLNODE
+        TOOLNODE -->|tool results| CHAT
+        END -->|streamed answer| UI
+    end
+
+    subgraph TOOLS[Tool integrations]
+        WIKI[Wikipedia API]
+        ARXIV[arXiv API]
+        TAVILY[Tavily Search API]
+        RETRIEVE[retrieve_knowledge<br/>backend/tools.py]
+    end
+
+    TOOLNODE --> WIKI
+    TOOLNODE --> ARXIV
+    TOOLNODE --> TAVILY
+    TOOLNODE --> RETRIEVE
+    WIKI -->|result| TOOLNODE
+    ARXIV -->|result| TOOLNODE
+    TAVILY -->|result| TOOLNODE
+    RETRIEVE -->|passages| TOOLNODE
+
+    subgraph RAG[Knowledge base]
+        DOCS[(PDF and Markdown<br/>knowledge_base/)]
+        INGEST[Load and split<br/>backend/rag/ingestion.py]
+        EMBED[Hugging Face embeddings<br/>all-MiniLM-L6-v2]
+        QDRANT[(Qdrant collection<br/>knowledge_base)]
+        DOCS --> INGEST -->|document chunks| EMBED
+        EMBED -->|index vectors| QDRANT
+        RETRIEVE -->|embed query| EMBED
+        QDRANT -->|matching passages| RETRIEVE
+    end
+
+    SQLITE[(SQLite<br/>chatbot.db)]
+    LANGSMITH[LangSmith<br/>optional tracing]
+    CHAT -. checkpoint by thread_id .-> SQLITE
+    CHAT -. traces when enabled .-> LANGSMITH
+
+    classDef actor fill:#f3f4f6,stroke:#4b5563,color:#111827
+    classDef app fill:#eaf2ff,stroke:#2563eb,color:#111827
+    classDef model fill:#f3e8ff,stroke:#7e22ce,color:#111827
+    classDef integration fill:#ecfdf5,stroke:#059669,color:#111827
+    classDef data fill:#fff7ed,stroke:#ea580c,color:#111827
+    classDef observability fill:#fdf2f8,stroke:#db2777,color:#111827
+
+    class USER actor
+    class UI,START,CHAT,ROUTE,TOOLNODE,END app
+    class MODEL model
+    class WIKI,ARXIV,TAVILY,RETRIEVE integration
+    class DOCS,INGEST,EMBED,QDRANT,SQLITE data
+    class LANGSMITH observability
 ```
 
-SQLite and Qdrant have separate roles: SQLite stores conversation state; Qdrant stores document chunks for search.
+SQLite stores conversation checkpoints keyed by `thread_id`. Qdrant stores embedded document chunks. By default Qdrant persists locally in `qdrant_data/`; it can also connect to a configured Qdrant server.
 
 ## Quick start
 
